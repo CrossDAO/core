@@ -52,7 +52,7 @@ async function main() {
 
   // create the contract deployment file
   const fileName = `${networkName}.json`;
-  const data = { address: governor.address };
+  const data = { address: governor.address, tokenAddress: token.address };
   writeJSONToFile(data, fileName);
 
   // transfer the required link token to the governor contract
