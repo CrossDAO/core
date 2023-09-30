@@ -95,4 +95,10 @@ contract Governor is OwnerIsCreator, CCIPReceiver {
     {
         return (lastReceivedMessageId, lastReceivedText);
     }
+
+    function withdrawLinkTokens(address beneficiary) public onlyOwner {
+        uint256 balance = linkToken.balanceOf(address(this));
+        if (balance == 0) return;
+        linkToken.transfer(beneficiary, balance);
+    }
 }
