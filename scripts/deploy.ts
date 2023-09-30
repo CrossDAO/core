@@ -1,4 +1,6 @@
 import { ethers } from "hardhat";
+import fs from "fs";
+import path from "path";
 
 interface ChainInfo {
   router: string;
@@ -36,15 +38,32 @@ const chains: Record<string, ChainInfo> = {
   },
 };
 
-const linkDepositAmount = ethers.utils.parseEther("10");
+const linkDepositAmount = ethers.utils.parseEther("2");
+
+async function writeJSONToFile(
+  data: any,
+  fileName: string,
+  dirPath = "./deployments"
+) {
+  if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath);
+
+  const filePath = path.join(dirPath, fileName);
+
+  if (fs.existsSync(filePath)) return false;
+
+  fs.writeFileSync(filePath, JSON.stringify(data));
+  return true;
+}
 
 async function main() {
   // check if the network is supported
   const network = await ethers.provider.getNetwork();
-  if (supportedNetworks[network.chainId] == undefined) {
-    console.error("Unsupported Chain");
-    return;
-  }
+  const networkName = supportedNetworks[network.chainId];
+  if (networkName == undefined) throw "Unsupported Chain";
+
+  // check if contract already deployed to the selected network
+  if (fs.existsSync(`./deployments/${networkName}.json`))
+    throw "Contract already deployed to the selected network";
 
   // get the chain info
   const info = chains[supportedNetworks[network.chainId]];
@@ -56,6 +75,12 @@ async function main() {
   await governor.deployTransaction.wait(1);
   console.log(`The governor contract is deployed at ${governor.address}`);
 
+  // create the contract deployment file
+  const fileName = `${networkName}.json`;
+  const data = { address: governor.address };
+  writeJSONToFile(data, fileName);
+
+  // transfer the required link token to the governor contract
   const LinkTokenInterface = await ethers.getContractFactory(
     "LinkTokenInterface"
   );
