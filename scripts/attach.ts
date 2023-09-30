@@ -20,13 +20,13 @@ async function main() {
   const governor = Governor.attach(address);
 
   const deployedNetworks = fs
-    .readdirSync("./deployment")
+    .readdirSync("./deployments")
     .map((fileName) => fileName.split(".")[0])
     .filter((deploymentChain) => deploymentChain !== networkName)
     .map((deploymentChain) => {
       const { address } = JSON.parse(
         fs
-          .readFileSync(`./deployment/${deploymentChain}.json`)
+          .readFileSync(`./deployments/${deploymentChain}.json`)
           .toString("utf-8")
       );
       return {
