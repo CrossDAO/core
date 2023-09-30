@@ -14,7 +14,7 @@ contract Governor is OwnerIsCreator, CCIPReceiver {
         bytes32 indexed messageId,
         uint64 indexed destinationChainSelector,
         address receiver,
-        string text,
+        bytes data,
         address feeToken,
         uint256 fees
     );
@@ -23,7 +23,7 @@ contract Governor is OwnerIsCreator, CCIPReceiver {
         bytes32 indexed messageId,
         uint64 indexed sourceChainSelector,
         address sender,
-        string text
+        bytes data
     );
 
     IRouterClient router;
@@ -33,19 +33,57 @@ contract Governor is OwnerIsCreator, CCIPReceiver {
     bytes32 private lastReceivedMessageId;
     string private lastReceivedText;
 
+    mapping(uint64 => address) public supportedChain;
+    mapping(uint256 => uint64) public supportedChainId;
+    uint256 totalSupportedChains;
+
+    error ZeroAddressNotAllowed();
+    error ChainNotSupported();
+    error Unauthorized();
+
     constructor(address _router, address _link) CCIPReceiver(_router) {
         router = IRouterClient(_router);
         linkToken = LinkTokenInterface(_link);
     }
 
-    function sendMessage(
+    function addSupportedChain(
+        uint64 chainSelector,
+        address targetContract
+    ) public onlyOwner {
+        if (targetContract == address(0)) revert ZeroAddressNotAllowed();
+        if (supportedChain[chainSelector] == address(0))
+            supportedChainId[totalSupportedChains++] = chainSelector;
+        supportedChain[chainSelector] = targetContract;
+    }
+
+    function removeSupportedChain(uint64 chainSelector) public onlyOwner {
+        if (supportedChain[chainSelector] == address(0))
+            revert ChainNotSupported();
+        supportedChain[chainSelector] = address(0);
+
+        uint256 index;
+        for (uint256 i = 0; i < totalSupportedChains; i++) {
+            if (supportedChainId[i] == chainSelector) index = i;
+        }
+        supportedChainId[index] = supportedChainId[--totalSupportedChains];
+    }
+
+    function broadcastMessage(bytes calldata data) external onlyOwner {
+        for (uint256 i = 0; i < totalSupportedChains; i++) {
+            uint64 destinationChainSelector = supportedChainId[i];
+            address receiver = supportedChain[destinationChainSelector];
+            _sendMessage(destinationChainSelector, receiver, data);
+        }
+    }
+
+    function _sendMessage(
         uint64 destinationChainSelector,
         address receiver,
-        string calldata text
-    ) external onlyOwner returns (bytes32 messageId) {
+        bytes calldata data
+    ) internal returns (bytes32 messageId) {
         Client.EVM2AnyMessage memory evm2AnyMessage = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
-            data: abi.encode(text),
+            data: data,
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: Client._argsToBytes(
                 Client.EVMExtraArgsV1({gasLimit: 200_000, strict: false})
@@ -66,7 +104,7 @@ contract Governor is OwnerIsCreator, CCIPReceiver {
             messageId,
             destinationChainSelector,
             receiver,
-            text,
+            data,
             address(linkToken),
             fees
         );
@@ -77,14 +115,17 @@ contract Governor is OwnerIsCreator, CCIPReceiver {
     function _ccipReceive(
         Client.Any2EVMMessage memory any2EvmMessage
     ) internal override {
+        address sender = abi.decode(any2EvmMessage.sender, (address));
+        if (supportedChain[any2EvmMessage.sourceChainSelector] != sender)
+            revert Unauthorized();
         lastReceivedMessageId = any2EvmMessage.messageId;
         lastReceivedText = abi.decode(any2EvmMessage.data, (string));
 
         emit MessageReceived(
             any2EvmMessage.messageId,
             any2EvmMessage.sourceChainSelector,
-            abi.decode(any2EvmMessage.sender, (address)),
-            abi.decode(any2EvmMessage.data, (string))
+            sender,
+            any2EvmMessage.data // abi.decode(any2EvmMessage.data, (string))
         );
     }
 
