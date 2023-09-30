@@ -33,9 +33,19 @@ async function main() {
   // get the chain info
   const info = chains[networkName];
 
+  // deploy the mock token contract
+  const MockToken = await ethers.getContractFactory("MockToken");
+  const token = await MockToken.deploy();
+
+  await token.deployTransaction.wait(1);
+
   // deploy the governor contract
   const Governor = await ethers.getContractFactory("Governor");
-  const governor = await Governor.deploy(info.linkToken, info.router);
+  const governor = await Governor.deploy(
+    token.address,
+    info.linkToken,
+    info.router
+  );
 
   await governor.deployTransaction.wait(1);
   console.log(`The governor contract is deployed at ${governor.address}`);
@@ -46,10 +56,8 @@ async function main() {
   writeJSONToFile(data, fileName);
 
   // transfer the required link token to the governor contract
-  const LinkTokenInterface = await ethers.getContractFactory(
-    "LinkTokenInterface"
-  );
-  const linkToken = LinkTokenInterface.attach(info.linkToken);
+  const ERC20 = await ethers.getContractFactory("ERC20");
+  const linkToken = ERC20.attach(info.linkToken);
 
   const tx = await linkToken.transfer(governor.address, linkDepositAmount);
   await tx.wait(1);
