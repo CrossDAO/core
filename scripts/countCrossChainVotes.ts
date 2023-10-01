@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { supportedNetworks } from "./common";
+import { chains, supportedNetworks } from "./common";
 import fs from "fs";
 
 async function main() {
@@ -19,12 +19,23 @@ async function main() {
   const Governor = await ethers.getContractFactory("MockGovernor");
   const governor = Governor.attach(address);
 
-  const beneficiary = await (await ethers.getSigners())[0].getAddress();
-  const tx = await governor.withdrawLinkTokens(beneficiary);
-  await tx.wait(1);
+  console.log(
+    await governor.crossChainProposals(chains["polygon-mumbai"].selector, 1)
+  );
+
+  await governor.voteOnCrossChainProposal(
+    chains["polygon-mumbai"].selector,
+    1,
+    1,
+    2
+  );
+
+  console.log(
+    await governor.crossChainProposals(chains["polygon-mumbai"].selector, 1)
+  );
 }
 
-main().catch((error) => {
-  console.error(error);
+main().catch((err) => {
+  console.error(err);
   process.exitCode = 1;
 });

@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { chains, supportedNetworks } from "./common";
 
-const linkDepositAmount = ethers.utils.parseEther("2");
+const linkDepositAmount = ethers.utils.parseEther("0.5");
 
 async function writeJSONToFile(
   data: any,
@@ -33,26 +33,16 @@ async function main() {
   // get the chain info
   const info = chains[networkName];
 
-  // deploy the mock token contract
-  const MockToken = await ethers.getContractFactory("MockToken");
-  const token = await MockToken.deploy();
-
-  await token.deployTransaction.wait(1);
-
   // deploy the governor contract
-  const Governor = await ethers.getContractFactory("Governor");
-  const governor = await Governor.deploy(
-    token.address,
-    info.linkToken,
-    info.router
-  );
+  const Governor = await ethers.getContractFactory("MockGovernor");
+  const governor = await Governor.deploy(info.router, info.linkToken);
 
   await governor.deployTransaction.wait(1);
   console.log(`The governor contract is deployed at ${governor.address}`);
 
   // create the contract deployment file
   const fileName = `${networkName}.json`;
-  const data = { address: governor.address, tokenAddress: token.address };
+  const data = { address: governor.address };
   writeJSONToFile(data, fileName);
 
   // transfer the required link token to the governor contract

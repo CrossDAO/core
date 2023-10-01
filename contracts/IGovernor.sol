@@ -9,7 +9,7 @@ interface IGovernor {
         address[] targets;
         uint256[] values;
         bytes[] calldatas;
-        bytes32 descriptionHash;
+        string description;
         bool executed;
         bool votesRequested;
         uint256 startTime;

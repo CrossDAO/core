@@ -10,9 +10,9 @@ import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.s
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
 import {CCIPReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
 
-import "./IGovernor.sol";
+import "../IGovernor.sol";
 
-contract Governor is OwnerIsCreator, CCIPReceiver, IGovernor {
+contract MockGovernor is OwnerIsCreator, CCIPReceiver, IGovernor {
     mapping(uint256 => mapping(address => VoteInfo))
         public hasVotedOnBaseProposal;
     mapping(uint256 => mapping(uint64 => bool)) public votesCountedOn;
@@ -29,9 +29,6 @@ contract Governor is OwnerIsCreator, CCIPReceiver, IGovernor {
 
     mapping(uint64 => address) public supportedContracts;
     uint64[] public supportedChains;
-
-    IERC20 public governanceToken;
-    mapping(address => uint256) public stakedBalance;
 
     uint256 constant GAS_LIMIT = 150_000;
 
@@ -66,13 +63,11 @@ contract Governor is OwnerIsCreator, CCIPReceiver, IGovernor {
     }
 
     constructor(
-        address _governanceToken,
         IRouterClient _router,
         LinkTokenInterface _linkToken
     ) CCIPReceiver(address(_router)) {
         linkToken = _linkToken;
         router = _router;
-        governanceToken = IERC20(_governanceToken);
     }
 
     receive() external payable {}
@@ -107,12 +102,6 @@ contract Governor is OwnerIsCreator, CCIPReceiver, IGovernor {
     function setDuration(uint256 _duration) public onlyOwner {
         duration = _duration;
         emit DurationUpdated(_duration);
-    }
-
-    function stake(uint256 amount) public {
-        governanceToken.transferFrom(msg.sender, address(this), amount);
-        stakedBalance[msg.sender] += amount;
-        emit TokenStaked(msg.sender, amount, stakedBalance[msg.sender]);
     }
 
     function createProposal(
@@ -175,14 +164,14 @@ contract Governor is OwnerIsCreator, CCIPReceiver, IGovernor {
 
     function voteOnBaseProposal(
         uint256 id,
-        VoteTypes voteType
+        VoteTypes voteType,
+        uint256 votingPower
     ) public onlyActiveBaseProposal(id) {
         BaseProposal storage proposal = baseProposals[id];
         VoteInfo storage votes = hasVotedOnBaseProposal[id][msg.sender];
         proposal.baseChainVoteInfo.forVotes -= votes.forVotes;
         proposal.baseChainVoteInfo.againstVotes -= votes.againstVotes;
         proposal.baseChainVoteInfo.abstrainVotes -= votes.abstrainVotes;
-        uint256 votingPower = stakedBalance[msg.sender];
         proposal.baseChainVoteInfo.totalVotes =
             proposal.baseChainVoteInfo.totalVotes +
             votingPower -
@@ -219,7 +208,8 @@ contract Governor is OwnerIsCreator, CCIPReceiver, IGovernor {
     function voteOnCrossChainProposal(
         uint64 chainSelector,
         uint256 proposalId,
-        VoteTypes voteType
+        VoteTypes voteType,
+        uint256 votingPower
     ) public onlyActiveCrossChainProposal(chainSelector, proposalId) {
         CrossChainProposal storage proposal = crossChainProposals[
             chainSelector
@@ -227,7 +217,6 @@ contract Governor is OwnerIsCreator, CCIPReceiver, IGovernor {
         VoteInfo storage votes = hasVotedOnCrossChainProposal[chainSelector][
             proposalId
         ][msg.sender];
-        uint256 votingPower = stakedBalance[msg.sender];
         proposal.votesInfo.forVotes -= votes.forVotes;
         proposal.votesInfo.againstVotes -= votes.againstVotes;
         proposal.votesInfo.abstrainVotes -= votes.abstrainVotes;
@@ -302,7 +291,7 @@ contract Governor is OwnerIsCreator, CCIPReceiver, IGovernor {
             data: data,
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: Client._argsToBytes(
-                Client.EVMExtraArgsV1({gasLimit: 200_000, strict: false})
+                Client.EVMExtraArgsV1({gasLimit: 400_000, strict: false})
             ),
             feeToken: address(linkToken)
         });
@@ -496,143 +485,6 @@ contract Governor is OwnerIsCreator, CCIPReceiver, IGovernor {
             againstVotes,
             abstrainVotes
         );
-    }
-
-    function unstake(uint256 amount) external {
-        if (stakedBalance[msg.sender] < amount)
-            revert InsufficiantStakedBalance();
-
-        uint256 newVotingPower = stakedBalance[msg.sender] - amount;
-        stakedBalance[msg.sender] = newVotingPower;
-
-        // check the base proposals
-        for (uint256 j = 0; j < totalEstimatedActiveBaseChainProposal; j++) {
-            uint256 proposalId = estimatedActiveBaseChainProposals[j];
-            BaseProposal memory proposal = baseProposals[proposalId];
-            if (
-                proposal.endTime <= block.timestamp &&
-                hasVotedOnBaseProposal[proposalId][msg.sender].totalVotes == 0
-            ) continue;
-            VoteInfo memory votes = hasVotedOnBaseProposal[proposalId][
-                msg.sender
-            ];
-            BaseProposal storage s_proposal = baseProposals[proposalId];
-            uint256 newTotalVotes = _min(votes.totalVotes, newVotingPower);
-            uint256 newForVotes = _min(votes.forVotes, newVotingPower);
-            uint256 newAgainstVotes = _min(votes.againstVotes, newVotingPower);
-            uint256 newAbstrainVotes = _min(
-                votes.abstrainVotes,
-                newVotingPower
-            );
-
-            s_proposal.baseChainVoteInfo.totalVotes +=
-                votes.totalVotes -
-                newTotalVotes;
-            s_proposal.baseChainVoteInfo.forVotes +=
-                votes.forVotes -
-                newForVotes;
-            s_proposal.baseChainVoteInfo.againstVotes +=
-                votes.againstVotes -
-                newAgainstVotes;
-            s_proposal.baseChainVoteInfo.abstrainVotes +=
-                votes.abstrainVotes -
-                newAbstrainVotes;
-
-            VoteInfo storage s_votes = hasVotedOnBaseProposal[proposalId][
-                msg.sender
-            ];
-
-            s_votes.totalVotes = newTotalVotes;
-            s_votes.forVotes = newForVotes;
-            s_votes.againstVotes = newAgainstVotes;
-            s_votes.abstrainVotes = newAbstrainVotes;
-
-            emit VotedOnBaseChainProposal(
-                proposalId,
-                msg.sender,
-                s_proposal.baseChainVoteInfo.forVotes,
-                s_proposal.baseChainVoteInfo.againstVotes,
-                s_proposal.baseChainVoteInfo.abstrainVotes,
-                newForVotes,
-                newAgainstVotes,
-                newAbstrainVotes
-            );
-        }
-
-        // check the cross chain proposals
-        uint256 m_totalSupportedVotingChains = totalSupportedChains;
-        for (uint256 i = 0; i < m_totalSupportedVotingChains; i++) {
-            uint64 chainSelector = supportedChains[i];
-            for (
-                uint256 j = 0;
-                j < totalEstimatedActiveCrossChainProposal[chainSelector];
-                j++
-            ) {
-                uint256 proposalId = estimatedActiveCrossChainProposals[
-                    chainSelector
-                ][j];
-                CrossChainProposal memory proposal = crossChainProposals[
-                    chainSelector
-                ][proposalId];
-                if (
-                    proposal.endTime <= block.timestamp &&
-                    hasVotedOnCrossChainProposal[chainSelector][proposalId][
-                        msg.sender
-                    ].totalVotes ==
-                    0
-                ) continue;
-                VoteInfo memory votes = hasVotedOnCrossChainProposal[
-                    chainSelector
-                ][proposalId][msg.sender];
-                CrossChainProposal storage s_proposal = crossChainProposals[
-                    chainSelector
-                ][proposalId];
-
-                uint256 newTotalVotes = _min(votes.totalVotes, newVotingPower);
-                uint256 newForVotes = _min(votes.forVotes, newVotingPower);
-                uint256 newAgainstVotes = _min(
-                    votes.againstVotes,
-                    newVotingPower
-                );
-                uint256 newAbstrainVotes = _min(
-                    votes.abstrainVotes,
-                    newVotingPower
-                );
-
-                s_proposal.votesInfo.totalVotes +=
-                    votes.totalVotes -
-                    newTotalVotes;
-                s_proposal.votesInfo.forVotes += votes.forVotes - newForVotes;
-                s_proposal.votesInfo.againstVotes +=
-                    votes.againstVotes -
-                    newAgainstVotes;
-                s_proposal.votesInfo.abstrainVotes +=
-                    votes.abstrainVotes -
-                    newAbstrainVotes;
-
-                VoteInfo storage s_votes = hasVotedOnCrossChainProposal[
-                    chainSelector
-                ][proposalId][msg.sender];
-
-                s_votes.totalVotes = newTotalVotes;
-                s_votes.forVotes = newForVotes;
-                s_votes.againstVotes = newAgainstVotes;
-                s_votes.abstrainVotes = newAbstrainVotes;
-                emit VotedOnCrossChainProposal(
-                    chainSelector,
-                    proposalId,
-                    msg.sender,
-                    s_proposal.votesInfo.forVotes,
-                    s_proposal.votesInfo.againstVotes,
-                    s_proposal.votesInfo.abstrainVotes,
-                    newForVotes,
-                    newAgainstVotes,
-                    newAbstrainVotes
-                );
-            }
-        }
-        governanceToken.transfer(msg.sender, amount);
-        emit TokenUnstaked(msg.sender, amount, newVotingPower);
     }
 
     function _min(uint256 a, uint256 b) internal pure returns (uint256) {

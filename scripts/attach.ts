@@ -16,7 +16,7 @@ async function main() {
 
   const { address } = JSON.parse(fs.readFileSync(filePath).toString("utf-8"));
 
-  const Governor = await ethers.getContractFactory("Governor");
+  const Governor = await ethers.getContractFactory("MockGovernor");
   const governor = Governor.attach(address);
 
   const deployedNetworks = fs

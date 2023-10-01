@@ -2,6 +2,8 @@ import { ethers } from "hardhat";
 import { supportedNetworks } from "./common";
 import fs from "fs";
 
+const votingDuration = 24 * 60 * 60;
+
 async function main() {
   // check if the network is supported
   const network = await ethers.provider.getNetwork();
@@ -19,12 +21,10 @@ async function main() {
   const Governor = await ethers.getContractFactory("MockGovernor");
   const governor = Governor.attach(address);
 
-  const beneficiary = await (await ethers.getSigners())[0].getAddress();
-  const tx = await governor.withdrawLinkTokens(beneficiary);
-  await tx.wait(1);
+  await governor.setDuration(votingDuration);
 }
 
-main().catch((error) => {
-  console.error(error);
+main().catch((err) => {
+  console.error(err);
   process.exitCode = 1;
 });

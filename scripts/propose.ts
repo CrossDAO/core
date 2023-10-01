@@ -19,12 +19,10 @@ async function main() {
   const Governor = await ethers.getContractFactory("MockGovernor");
   const governor = Governor.attach(address);
 
-  const beneficiary = await (await ethers.getSigners())[0].getAddress();
-  const tx = await governor.withdrawLinkTokens(beneficiary);
-  await tx.wait(1);
+  await governor.createProposal([], [], [], "Hello World");
 }
 
-main().catch((error) => {
-  console.error(error);
+main().catch((err) => {
+  console.error(err);
   process.exitCode = 1;
 });
