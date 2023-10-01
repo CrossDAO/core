@@ -5,3 +5,6 @@ npx hardhat run ./scripts/deploy.ts --network avalanche-fuji
 
 npx hardhat run ./scripts/attach.ts --network polygon-mumbai 
 npx hardhat run ./scripts/attach.ts --network avalanche-fuji 
+
+npx hardhat run ./scripts/setConfig.ts --network polygon-mumbai
+npx hardhat run ./scripts/setConfig.ts --network avalanche-fuji
