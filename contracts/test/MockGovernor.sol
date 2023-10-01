@@ -246,7 +246,7 @@ contract MockGovernor is OwnerIsCreator, CCIPReceiver, IGovernor {
     function countVotes(uint256 id) public {
         if (id >= totalProposals) revert InvalidProposalId();
         BaseProposal memory proposal = baseProposals[id];
-        if (proposal.endTime > block.timestamp) revert VotingPeriodNotEnded();
+        // if (proposal.endTime > block.timestamp) revert VotingPeriodNotEnded();
         if (proposal.votesRequested) revert VotesAlreadyRequested();
 
         baseProposals[id].votesRequested = true;
@@ -260,6 +260,14 @@ contract MockGovernor is OwnerIsCreator, CCIPReceiver, IGovernor {
         ] = estimatedActiveBaseChainProposals[
             --totalEstimatedActiveBaseChainProposal
         ];
+    }
+
+    function countVotesAndCloseProposals() public {
+        for (uint256 i = 0; i < totalEstimatedActiveBaseChainProposal; i++) {
+            uint256 proposalId = estimatedActiveBaseChainProposals[i];
+
+            countVotes(proposalId);
+        }
     }
 
     function broadcastMessageToOtherChains(
