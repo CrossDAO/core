@@ -22,7 +22,7 @@ const ProposalsList = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center w-full">
         <h1>
           <span className="text-3xl flex-1 font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-400">
             Proposals

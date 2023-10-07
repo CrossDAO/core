@@ -14,7 +14,7 @@ const Home: NextPage = () => {
             Toggle Private mode <Toggle />
           </div>
         </div>
-        <div>
+        <div className="flex-1">
           <ProposalsList />
         </div>
       </div>
