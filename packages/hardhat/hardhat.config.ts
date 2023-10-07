@@ -75,7 +75,7 @@ const config: HardhatUserConfig = {
       url: `https://polygon-mainnet.g.alchemy.com/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey],
     },
-    polygonMumbai: {
+    "polygon-mumbai": {
       url: `https://polygon-mumbai.g.alchemy.com/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey],
     },
@@ -111,8 +111,8 @@ const config: HardhatUserConfig = {
       url: "https://mainnet.base.org",
       accounts: [deployerPrivateKey],
     },
-    baseGoerli: {
-      url: "https://goerli.base.org",
+    "base-goerli": {
+      url: "https://1rpc.io/base-goerli",
       accounts: [deployerPrivateKey],
     },
     scrollSepolia: {
