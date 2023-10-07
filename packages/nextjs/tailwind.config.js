@@ -9,7 +9,7 @@ module.exports = {
       {
         crossdao: {
           primary: "#212638",
-          "primary-content": "#F9FBFF",
+          "primary-content": "#8b949e",
           secondary: "#323f61",
           "secondary-content": "#F9FBFF",
           accent: "#4969A6",
