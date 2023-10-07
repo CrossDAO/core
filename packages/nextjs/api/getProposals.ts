@@ -11,7 +11,7 @@ const mockedProposals = [
 ];
 
 export const getProposals = async () => {
-  // Testing purposes
+  // For testing purposes
   return mockedProposals;
 
   const response = await axios.get("/api/proposals").catch(err => {

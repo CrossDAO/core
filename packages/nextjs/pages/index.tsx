@@ -1,17 +1,22 @@
 import type { NextPage } from "next";
+import Balances from "~~/components/Balances";
 import ProposalsList from "~~/components/ProposalsList";
+import Toggle from "~~/components/Toggle";
 
 const Home: NextPage = () => {
   return (
     <>
-      <div className="flex flex-col flex-grow pt-10 max-w-2xl w-full m-auto">
-        <h1>
-          <span className="text-5xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-400">
-            Proposals
-          </span>
-        </h1>
+      <div className="flex flex-grow pt-10 max-w-4xl w-full m-auto gap-8">
+        <div className="w-64">
+          <Balances />
 
-        <ProposalsList />
+          <div className="mt-6 flex justify-between items-center">
+            Toggle Private mode <Toggle />
+          </div>
+        </div>
+        <div className="flex-1">
+          <ProposalsList />
+        </div>
       </div>
     </>
   );
