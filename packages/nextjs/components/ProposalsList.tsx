@@ -22,8 +22,13 @@ const ProposalsList = () => {
 
   return (
     <>
-      <div className="gap-4 flex flex-col pb-10 mt-6">
-        <div className="flex justify-end">
+      <div className="flex justify-between items-center">
+        <h1>
+          <span className="text-3xl flex-1 font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-400">
+            Proposals
+          </span>
+        </h1>
+        <div>
           <button
             className="border rounded-full transition-colors border-base-200 hover:border-base-100  text-white px-4 py-2 text-center flex gap-2 justify-center"
             onClick={() => router.push("/create")}
@@ -31,7 +36,8 @@ const ProposalsList = () => {
             New Proposal
           </button>
         </div>
-
+      </div>
+      <div className="gap-4 flex flex-col pb-10 mt-6">
         {proposals?.map((item: any, i: number) => (
           <Proposal key={i} proposal={item} />
         ))}

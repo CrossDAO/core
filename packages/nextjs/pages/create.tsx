@@ -13,7 +13,7 @@ const Create: NextPage = () => {
       </button>
 
       <h1 className="my-6">
-        <span className="text-5xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-400 ">
+        <span className="text-3xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-400 ">
           Create
         </span>
       </h1>
