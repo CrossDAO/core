@@ -37,7 +37,7 @@ const Debug: NextPage = () => {
                 {contractNames.map(contractName => (
                   <button
                     className={`btn btn-secondary btn-sm normal-case font-thin ${
-                      contractName === selectedContract ? "bg-base-300" : "bg-base-100"
+                      contractName === selectedContract ? "bg-base-300" : "bg-base-200"
                     }`}
                     key={contractName}
                     onClick={() => setSelectedContract(contractName)}

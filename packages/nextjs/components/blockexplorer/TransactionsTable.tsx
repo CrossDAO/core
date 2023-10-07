@@ -10,7 +10,7 @@ export const TransactionsTable = ({ blocks, transactionReceipts }: TransactionsT
   return (
     <div className="flex justify-center px-4 md:px-0">
       <div className="overflow-x-auto w-full shadow-2xl rounded-xl">
-        <table className="table text-xl bg-base-100 table-zebra w-full md:table-md table-sm">
+        <table className="table text-xl bg-base-200 table-zebra w-full md:table-md table-sm">
           <thead>
             <tr className="rounded-xl text-sm text-base-content">
               <th className="bg-primary">Transaction Hash</th>
