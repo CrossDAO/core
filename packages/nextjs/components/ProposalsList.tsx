@@ -1,33 +1,16 @@
+import { useRouter } from "next/router";
 import Proposal from "./ProposalItem";
 import Spinner from "./Spinner";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-
-const mockedProposals = [
-  {
-    id: 1,
-    title: "New proposal",
-    description: "This is some proposal that needs voting",
-    chainId: 1,
-  },
-];
+import { useGetProposals } from "~~/api/getProposals";
 
 const ProposalsList = () => {
+  const router = useRouter();
+
   const {
     data: proposals = [],
     isLoading: isFetchingProposals,
-    refetch: refetchProposals,
-  } = useQuery({
-    queryKey: ["proposals"],
-    queryFn: async () => {
-      const response = await axios.get("/api/proposals").catch(err => {
-        console.error(err);
-        return { data: [] };
-      });
-
-      return response.data;
-    },
-  });
+    // refetch: refetchProposals,
+  } = useGetProposals();
 
   if (isFetchingProposals) {
     return (
@@ -39,14 +22,17 @@ const ProposalsList = () => {
 
   return (
     <>
-      <div className="gap-4 flex flex-col pb-10">
+      <div className="gap-4 flex flex-col pb-10 mt-6">
         <div className="flex justify-end">
-          <button className="border rounded-full transition-colors border-base-200 hover:border-base-100 mt-6 text-white px-4 py-2 mb-4 text-center flex gap-2 justify-center">
+          <button
+            className="border rounded-full transition-colors border-base-200 hover:border-base-100  text-white px-4 py-2 text-center flex gap-2 justify-center"
+            onClick={() => router.push("/create")}
+          >
             New Proposal
           </button>
         </div>
 
-        {mockedProposals?.map((item: any, i: number) => (
+        {proposals?.map((item: any, i: number) => (
           <Proposal key={i} proposal={item} />
         ))}
       </div>

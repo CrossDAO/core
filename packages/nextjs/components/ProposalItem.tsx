@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { chainLogos } from "../constants";
 
 export interface IProposal {
@@ -15,11 +16,16 @@ interface ProposalProps {
 }
 
 const Proposal = ({ proposal }: ProposalProps) => {
+  const router = useRouter();
+
   const chainImage = chainLogos[proposal.chainId as keyof typeof chainLogos];
 
   return (
     <>
-      <div className="card shadow-xl m-auto w-full border hover:border-base-100 border-base-200 cursor-pointer transition-colors">
+      <div
+        className="card shadow-xl m-auto w-full border hover:border-base-100 border-base-200 cursor-pointer transition-colors"
+        onClick={() => router.push(`/proposal/${proposal.id}`)}
+      >
         <div className="card-body p-6">
           <div className="flex gap-4">
             {chainImage && (
