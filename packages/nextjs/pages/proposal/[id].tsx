@@ -1,4 +1,3 @@
-import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
@@ -7,8 +6,8 @@ import ProposalDetails from "~~/components/ProposalDetails";
 import { IProposal } from "~~/components/ProposalItem";
 
 const Details: NextPage = () => {
-  const { id } = useParams();
   const router = useRouter();
+  const { id } = router.query;
 
   const { data = [], isLoading } = useGetProposals();
 
