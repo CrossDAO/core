@@ -79,20 +79,22 @@ const ProposalDetails = ({ proposal, isLoading }: ProposalDetailsProps) => {
         <div className="p-4 border-b border-base-200">Cast your vote</div>
         <div className="p-4 flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            {options.map(({ value, label }) => (
-              <button
-                key={label}
-                className={classNames(
-                  "border rounded-full transition-colors border-base-200 hover:border-base-100  text-white px-4 py-2 text-center flex gap-2 justify-center w-full",
-                  {
-                    ["border-base-100"]: value === vote,
-                  },
-                )}
-                onClick={() => setVote(value)}
-              >
-                {label}
-              </button>
-            ))}
+            {options.map(({ value, label }) => {
+              return (
+                <button
+                  key={label}
+                  className={classNames(
+                    "border rounded-full transition-colors border-base-200 hover:border-base-100  text-white px-4 py-2 text-center flex gap-2 justify-center w-full",
+                    {
+                      ["!border-base-100"]: value === vote,
+                    },
+                  )}
+                  onClick={() => setVote(value)}
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
           {isVoteLoading ? (
             <div className="w-full flex justify-center">
