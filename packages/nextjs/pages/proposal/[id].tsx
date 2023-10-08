@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { useGetProposals } from "~~/api/getProposals";
+import { useGetProposals } from "~~/apiRequests/getProposals";
 import ProposalDetails from "~~/components/ProposalDetails";
 import { IProposal } from "~~/components/ProposalItem";
 import { chainLogos } from "~~/constants";
