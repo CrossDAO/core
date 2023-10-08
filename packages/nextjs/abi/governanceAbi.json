@@ -2,13 +2,13 @@
   {
     "inputs": [
       {
-        "internalType": "contract IRouterClient",
-        "name": "_router",
+        "internalType": "address",
+        "name": "_governanceToken",
         "type": "address"
       },
       {
-        "internalType": "contract LinkTokenInterface",
-        "name": "_linkToken",
+        "internalType": "address",
+        "name": "wormholeRelayer_",
         "type": "address"
       }
     ],
@@ -27,34 +27,28 @@
   },
   {
     "inputs": [],
+    "name": "InvalidFeesPaid",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "InvalidProposalId",
     "type": "error"
   },
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "router",
-        "type": "address"
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
       }
     ],
-    "name": "InvalidRouter",
+    "name": "NotAnEvmAddress",
     "type": "error"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "currentBalance",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "calculatedFees",
-        "type": "uint256"
-      }
-    ],
-    "name": "NotEnoughBalance",
+    "inputs": [],
+    "name": "OnlyRelayerAllowed",
     "type": "error"
   },
   {
@@ -85,9 +79,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint64",
-        "name": "chainSelector",
-        "type": "uint64"
+        "internalType": "uint16",
+        "name": "chainId",
+        "type": "uint16"
       },
       {
         "internalType": "uint256",
@@ -123,9 +117,9 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "uint64",
-        "name": "chainSelector",
-        "type": "uint64"
+        "internalType": "uint16",
+        "name": "chainId",
+        "type": "uint16"
       },
       {
         "indexed": true,
@@ -168,32 +162,13 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "from",
+        "name": "previousOwner",
         "type": "address"
       },
       {
         "indexed": true,
         "internalType": "address",
-        "name": "to",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipTransferRequested",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
+        "name": "newOwner",
         "type": "address"
       }
     ],
@@ -285,9 +260,9 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "uint64",
-        "name": "chainSelector",
-        "type": "uint64"
+        "internalType": "uint16",
+        "name": "chainId",
+        "type": "uint16"
       },
       {
         "indexed": true,
@@ -304,9 +279,9 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "uint64",
-        "name": "chainSelector",
-        "type": "uint64"
+        "internalType": "uint16",
+        "name": "chainId",
+        "type": "uint16"
       }
     ],
     "name": "SupportChainRemoved",
@@ -422,9 +397,9 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "uint64",
-        "name": "chainSelector",
-        "type": "uint64"
+        "internalType": "uint16",
+        "name": "chainId",
+        "type": "uint16"
       },
       {
         "indexed": true,
@@ -483,9 +458,9 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "uint64",
-        "name": "chainSelector",
-        "type": "uint64"
+        "internalType": "uint16",
+        "name": "chainId",
+        "type": "uint16"
       },
       {
         "indexed": true,
@@ -538,9 +513,9 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "uint64",
-        "name": "chainSelector",
-        "type": "uint64"
+        "internalType": "uint16",
+        "name": "chainId",
+        "type": "uint16"
       },
       {
         "indexed": true,
@@ -571,18 +546,11 @@
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "acceptOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
-        "internalType": "uint64",
-        "name": "chainSelector",
-        "type": "uint64"
+        "internalType": "uint16",
+        "name": "chainId",
+        "type": "uint16"
       },
       {
         "internalType": "address",
@@ -616,9 +584,9 @@
         "type": "address"
       },
       {
-        "internalType": "string",
-        "name": "description",
-        "type": "string"
+        "internalType": "bytes32",
+        "name": "descriptionHash",
+        "type": "bytes32"
       },
       {
         "internalType": "bool",
@@ -663,7 +631,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct IGovernor.VoteInfo",
+        "internalType": "struct IGovernorV2.VoteInfo",
         "name": "baseChainVoteInfo",
         "type": "tuple"
       },
@@ -690,7 +658,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct IGovernor.VoteInfo",
+        "internalType": "struct IGovernorV2.VoteInfo",
         "name": "crossChainVoteInfo",
         "type": "tuple"
       },
@@ -706,71 +674,12 @@
   {
     "inputs": [
       {
-        "components": [
-          {
-            "internalType": "bytes32",
-            "name": "messageId",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "uint64",
-            "name": "sourceChainSelector",
-            "type": "uint64"
-          },
-          {
-            "internalType": "bytes",
-            "name": "sender",
-            "type": "bytes"
-          },
-          {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-          },
-          {
-            "components": [
-              {
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct Client.EVMTokenAmount[]",
-            "name": "destTokenAmounts",
-            "type": "tuple[]"
-          }
-        ],
-        "internalType": "struct Client.Any2EVMMessage",
-        "name": "message",
-        "type": "tuple"
-      }
-    ],
-    "name": "ccipReceive",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "id",
         "type": "uint256"
       }
     ],
     "name": "countVotes",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "countVotesAndCloseProposals",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -806,9 +715,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint64",
+        "internalType": "uint16",
         "name": "",
-        "type": "uint64"
+        "type": "uint16"
       },
       {
         "internalType": "uint256",
@@ -819,9 +728,9 @@
     "name": "crossChainProposals",
     "outputs": [
       {
-        "internalType": "uint64",
-        "name": "chainSelector",
-        "type": "uint64"
+        "internalType": "uint16",
+        "name": "chainId",
+        "type": "uint16"
       },
       {
         "internalType": "uint256",
@@ -866,7 +775,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct IGovernor.VoteInfo",
+        "internalType": "struct IGovernorV2.VoteInfo",
         "name": "votesInfo",
         "type": "tuple"
       },
@@ -914,9 +823,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint64",
+        "internalType": "uint16",
         "name": "",
-        "type": "uint64"
+        "type": "uint16"
       },
       {
         "internalType": "uint256",
@@ -950,10 +859,10 @@
   },
   {
     "inputs": [],
-    "name": "getRouter",
+    "name": "governanceToken",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "contract IERC20",
         "name": "",
         "type": "address"
       }
@@ -1003,9 +912,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint64",
+        "internalType": "uint16",
         "name": "",
-        "type": "uint64"
+        "type": "uint16"
       },
       {
         "internalType": "uint256",
@@ -1058,14 +967,67 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "quoteBroadcastingFees",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "cost",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
-        "internalType": "uint64",
-        "name": "chainSelector",
-        "type": "uint64"
+        "internalType": "bytes",
+        "name": "payload",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes[]",
+        "name": "",
+        "type": "bytes[]"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "sourceAddress",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint16",
+        "name": "sourceChain",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "receiveWormholeMessages",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "chainId",
+        "type": "uint16"
       }
     ],
     "name": "removeSupportedContract",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1087,16 +1049,29 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "amount",
         "type": "uint256"
       }
     ],
-    "name": "supportedChains",
+    "name": "stake",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "stakedBalance",
     "outputs": [
       {
-        "internalType": "uint64",
+        "internalType": "uint256",
         "name": "",
-        "type": "uint64"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -1105,9 +1080,28 @@
   {
     "inputs": [
       {
-        "internalType": "uint64",
+        "internalType": "uint256",
         "name": "",
-        "type": "uint64"
+        "type": "uint256"
+      }
+    ],
+    "name": "supportedChains",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
       }
     ],
     "name": "supportedContracts",
@@ -1119,25 +1113,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes4",
-        "name": "interfaceId",
-        "type": "bytes4"
-      }
-    ],
-    "name": "supportsInterface",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -1156,9 +1131,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint64",
+        "internalType": "uint16",
         "name": "",
-        "type": "uint64"
+        "type": "uint16"
       }
     ],
     "name": "totalEstimatedActiveCrossChainProposal",
@@ -1202,7 +1177,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "to",
+        "name": "newOwner",
         "type": "address"
       }
     ],
@@ -1215,18 +1190,26 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "unstake",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "id",
         "type": "uint256"
       },
       {
-        "internalType": "enum IGovernor.VoteTypes",
+        "internalType": "enum IGovernorV2.VoteTypes",
         "name": "voteType",
         "type": "uint8"
-      },
-      {
-        "internalType": "uint256",
-        "name": "votingPower",
-        "type": "uint256"
       }
     ],
     "name": "voteOnBaseProposal",
@@ -1237,9 +1220,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint64",
-        "name": "chainSelector",
-        "type": "uint64"
+        "internalType": "uint16",
+        "name": "chainId",
+        "type": "uint16"
       },
       {
         "internalType": "uint256",
@@ -1247,14 +1230,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "enum IGovernor.VoteTypes",
+        "internalType": "enum IGovernorV2.VoteTypes",
         "name": "voteType",
         "type": "uint8"
-      },
-      {
-        "internalType": "uint256",
-        "name": "votingPower",
-        "type": "uint256"
       }
     ],
     "name": "voteOnCrossChainProposal",
@@ -1270,9 +1248,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint64",
+        "internalType": "uint16",
         "name": "",
-        "type": "uint64"
+        "type": "uint16"
       }
     ],
     "name": "votesCountedOn",
@@ -1287,16 +1265,16 @@
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "wormholeRelayer",
+    "outputs": [
       {
-        "internalType": "address",
-        "name": "beneficiary",
+        "internalType": "contract IWormholeRelayer",
+        "name": "",
         "type": "address"
       }
     ],
-    "name": "withdrawLinkTokens",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {

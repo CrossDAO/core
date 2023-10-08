@@ -5,8 +5,8 @@ import governanceAbi from "~~/abi/governanceAbi.json";
 const polygonMumbai = new ethers.JsonRpcProvider(
   `https://polygon-mumbai.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
 );
-const avalancheFuji = new ethers.JsonRpcProvider(
-  `https://avalanche-fuji.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
+const baseGoerli = new ethers.JsonRpcProvider(
+  `https://base-goerli.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
 );
 
 (BigInt.prototype as any).toJSON = function () {
@@ -15,10 +15,10 @@ const avalancheFuji = new ethers.JsonRpcProvider(
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const fujiContract = new ethers.Contract(
-      process.env.NEXT_PUBLIC_FUJI_CONTRACT_ADDRESS as string,
+    const baseGoerliContract = new ethers.Contract(
+      process.env.NEXT_PUBLIC_BASE_GOERLI_CONTRACT_ADDRESS as string,
       governanceAbi,
-      avalancheFuji,
+      baseGoerli,
     );
     const mumbaiContract = new ethers.Contract(
       process.env.NEXT_PUBLIC_MUMBAI_CONTRACT_ADDRESS as string,
@@ -26,23 +26,25 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       polygonMumbai,
     );
 
-    const fujiTotalProposals = await fujiContract.totalProposals();
+    const baseGoerliTotalProposals = await baseGoerliContract.totalProposals();
     const mumbaiTotalProposals = await mumbaiContract.totalProposals();
 
-    const fujiProposals = [];
-    for (let i = 0; i < Number(fujiTotalProposals); i++) {
-      const proposal = await fujiContract.baseProposals(i);
+    const baseGoerliProposals = [];
+    for (let i = 0; i < Number(baseGoerliTotalProposals); i++) {
+      const proposal = await baseGoerliContract.baseProposals(i);
       const [title, description] = proposal[2].split(":");
 
-      const crossChainVotes = (await mumbaiContract.crossChainProposals("14767482510784806043", proposal[0]))[5];
+      console.log(proposal);
 
-      fujiProposals.push({
+      const crossChainVotes = (await mumbaiContract.crossChainProposals("30", proposal[0]))[5];
+
+      baseGoerliProposals.push({
         id: proposal[0],
         title,
         description,
         baseChainVotes: proposal[7],
         otherChainVotes: crossChainVotes,
-        chainId: 43113,
+        chainId: 84531,
       });
     }
 
@@ -51,7 +53,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       const proposal = await mumbaiContract.baseProposals(i);
       const [title, description] = proposal[2].split(":");
 
-      const crossChainVotes = (await fujiContract.crossChainProposals("12532609583862916517", proposal[0]))[5];
+      const crossChainVotes = (await baseGoerliContract.crossChainProposals("5", proposal[0]))[5];
 
       mumbaiProposals.push({
         id: proposal[0],
@@ -63,7 +65,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       });
     }
 
-    const proposals = [...fujiProposals, ...mumbaiProposals];
+    const proposals = [...baseGoerliProposals, ...mumbaiProposals];
 
     return res.json(proposals);
   } catch (error) {

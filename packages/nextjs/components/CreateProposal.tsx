@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { useRouter } from "next/router";
 import Spinner from "./Spinner";
 import toast from "react-hot-toast";
 import { Abi } from "viem";
@@ -12,6 +13,7 @@ const CreateProposal = () => {
   const { chain } = useNetwork();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const router = useRouter();
 
   const [isCreating, setIsCreating] = useState(false);
 
@@ -34,13 +36,14 @@ const CreateProposal = () => {
       await queryClient.invalidateQueries(["proposals"]);
 
       toast.success("Proposal created");
+      router.push("/");
     } catch (err) {
       console.error(err);
       toast.error("Something went wrong", { id: "create-error" });
     } finally {
       setIsCreating(false);
     }
-  }, [chain, description, title]);
+  }, [chain, description, router, title]);
 
   return (
     <div className="gap-4 flex flex-col pb-10">
