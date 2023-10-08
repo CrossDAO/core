@@ -27,13 +27,11 @@ class EventHandler {
     syncEvent() {
         return __awaiter(this, void 0, void 0, function* () {
             this.startListener();
-            console.log("A");
             yield this.syncEventTillNow();
         });
     }
     startListener() {
         this.contract.on(this.filter, (...args) => __awaiter(this, void 0, void 0, function* () {
-            console.log("Hello");
             const eventEmitted = args[args.length - 1];
             yield this.addEvent(eventEmitted);
         }));
@@ -56,7 +54,6 @@ class EventHandler {
                     startBlock += blocks + 1;
                 }
                 catch (err) {
-                    console.log(err);
                     blocks = Math.floor(blocks / 2);
                 }
             }
@@ -72,7 +69,6 @@ class EventHandler {
                 index = log.index;
             }
             const data = this.parse(event);
-            console.log(data);
             const oldEvent = yield this.table.findUnique({
                 where: {
                     baseChainId_blockNumber_transactionHash_transactionIndex_logIndex: {
@@ -84,7 +80,6 @@ class EventHandler {
                     },
                 },
             });
-            console.log("oldEvent", oldEvent);
             if (oldEvent)
                 return;
             yield this.table.create({ data: Object.assign({}, data) });

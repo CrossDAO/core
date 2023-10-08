@@ -1,6 +1,9 @@
+import proposalRouter from "./routes/proposals";
 import { syncEvents } from "./web3Listeners";
+import cors from "cors";
 import dotenv from "dotenv";
 import { ethers } from "ethers";
+import express from "express";
 
 dotenv.config();
 
@@ -32,3 +35,13 @@ async function main() {
 }
 
 main();
+
+const app = express();
+
+app.use(express.json());
+
+app.use(cors());
+
+app.use("/proposals", proposalRouter);
+
+app.listen(8000, () => console.log(`The server is listening on port ${8000}`));
