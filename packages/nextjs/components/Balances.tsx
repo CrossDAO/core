@@ -28,12 +28,12 @@ const Balances = () => {
     args: [address],
   });
 
-  const amountToStake = ethers.parseEther(amount || "0");
-
   const handleAllowanceTransaction = useCallback(async () => {
     if (!chain?.id) return;
 
     setIsLoading(true);
+
+    const amountToStake = ethers.parseEther(amount || "0");
 
     try {
       const { request: approvePrepareRequest } = await prepareWriteContract({
@@ -52,12 +52,14 @@ const Balances = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [amountToStake, chain]);
+  }, [amount, chain]);
 
   const handleStakeTransaction = useCallback(async () => {
     if (!chain?.id) return;
 
     setIsLoading(true);
+
+    const amountToStake = ethers.parseEther(amount || "0");
 
     try {
       const { request: stakePrepareRequest } = await prepareWriteContract({
@@ -79,7 +81,7 @@ const Balances = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [amountToStake, chain, refetch]);
+  }, [amount, chain, refetch]);
 
   return (
     <>
