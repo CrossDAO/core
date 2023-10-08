@@ -34,8 +34,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       const proposal = await baseGoerliContract.baseProposals(i);
       const [title, description] = proposal[2].split(":");
 
-      console.log(proposal);
-
       const crossChainVotes = (await mumbaiContract.crossChainProposals("30", proposal[0]))[5];
 
       baseGoerliProposals.push({

@@ -1,20 +1,15 @@
 import { useCallback, useState } from "react";
+import { useRouter } from "next/router";
 import { IProposal } from "./ProposalItem";
 import Spinner from "./Spinner";
 import classNames from "classnames";
 import toast from "react-hot-toast";
 import { Abi } from "viem";
-import { avalancheFuji, polygonMumbai } from "viem/chains";
 import { useNetwork } from "wagmi";
 import { prepareWriteContract, waitForTransaction, writeContract } from "wagmi/actions";
 import governanceAbi from "~~/abi/governanceAbi.json";
-import { governanceContract } from "~~/constants";
+import { chainSelectors, governanceContract } from "~~/constants";
 import { queryClient } from "~~/services/react-query";
-
-const chainSelectors = {
-  [polygonMumbai.id]: "12532609583862916517",
-  [avalancheFuji.id]: "14767482510784806043",
-};
 
 type ProposalDetailsProps = {
   proposal: IProposal;
@@ -23,6 +18,7 @@ type ProposalDetailsProps = {
 
 const ProposalDetails = ({ proposal, isLoading }: ProposalDetailsProps) => {
   const { chain } = useNetwork();
+  const router = useRouter();
 
   const [vote, setVote] = useState<boolean | undefined>();
   const [isVoteLoading, setIsVoteLoading] = useState(false);
@@ -39,11 +35,11 @@ const ProposalDetails = ({ proposal, isLoading }: ProposalDetailsProps) => {
         ...(chain.id === proposal.chainId
           ? {
               functionName: "voteOnBaseProposal",
-              args: [proposal.id, vote ? 0 : 1, 1],
+              args: [proposal.id, vote ? 0 : 1],
             }
           : {
               functionName: "voteOnCrossChainProposal",
-              args: [chainSelectors[proposal.chainId as keyof typeof chainSelectors], proposal.id, vote ? 0 : 1, 1],
+              args: [chainSelectors[proposal.chainId as keyof typeof chainSelectors], proposal.id, vote ? 0 : 1],
             }),
       });
 
@@ -52,6 +48,7 @@ const ProposalDetails = ({ proposal, isLoading }: ProposalDetailsProps) => {
       await waitForTransaction({ hash });
       await queryClient.invalidateQueries(["proposals"]);
 
+      router.push("/");
       toast.success("Vote submitted");
     } catch (err) {
       console.error(err);
@@ -59,7 +56,7 @@ const ProposalDetails = ({ proposal, isLoading }: ProposalDetailsProps) => {
     } finally {
       setIsVoteLoading(false);
     }
-  }, [chain, proposal, vote]);
+  }, [chain, proposal, router, vote]);
 
   const options = [
     { value: true, label: "Vote for" },
