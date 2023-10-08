@@ -11,11 +11,11 @@ const Details: NextPage = () => {
   const router = useRouter();
   const { id = "" } = router.query;
 
-  const [chainId, proposalId] = (id as string).split("-");
+  const [chainId, proposalId] = (id as string)?.split("-") || [];
 
   const { data = [], isLoading } = useGetProposals();
 
-  const proposal = data.find((p: IProposal) => p.id === proposalId && p.chainId === parseInt(chainId));
+  const proposal = data.find((p: IProposal) => p.id === proposalId && p.chainId === parseInt(chainId)) || {};
 
   const chainImage = chainLogos[proposal.chainId as keyof typeof chainLogos];
 
