@@ -15,8 +15,6 @@ export async function syncEvents({
   provider: Provider;
   minBlock: number;
 }) {
-  await Promise.all([
-    syncGovernorContractEvent(chainId, minBlock, governorAddress, provider),
-    syncTokenContractEvent(chainId, minBlock, tokenAddress, provider),
-  ]);
+  await syncGovernorContractEvent(chainId, minBlock, governorAddress, provider);
+  await syncTokenContractEvent(chainId, minBlock, tokenAddress, provider);
 }

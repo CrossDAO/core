@@ -14,10 +14,10 @@ const client_1 = require("@prisma/client");
 const ethers_1 = require("ethers");
 const prisma = new client_1.PrismaClient();
 class EventHandler {
-    constructor(provider, minBlock, chainId, contract, fields, table, eventName) {
+    constructor(provider, minBlock, baseChainId, contract, fields, table, eventName) {
         this.provider = provider;
         this.minBlock = minBlock;
-        this.chainId = chainId;
+        this.baseChainId = baseChainId;
         this.contract = contract;
         this.fields = fields;
         this.table = prisma[table];
@@ -27,11 +27,13 @@ class EventHandler {
     syncEvent() {
         return __awaiter(this, void 0, void 0, function* () {
             this.startListener();
+            console.log("A");
             yield this.syncEventTillNow();
         });
     }
     startListener() {
         this.contract.on(this.filter, (...args) => __awaiter(this, void 0, void 0, function* () {
+            console.log("Hello");
             const eventEmitted = args[args.length - 1];
             yield this.addEvent(eventEmitted);
         }));
@@ -39,7 +41,6 @@ class EventHandler {
     syncEventTillNow() {
         return __awaiter(this, void 0, void 0, function* () {
             const lastEvent = yield this.table.findFirst({
-                where: { manualEntry: false },
                 orderBy: { blockNumber: "desc" },
             });
             const lastBlock = (lastEvent === null || lastEvent === void 0 ? void 0 : lastEvent.blockNumber) || this.minBlock;
@@ -55,6 +56,7 @@ class EventHandler {
                     startBlock += blocks + 1;
                 }
                 catch (err) {
+                    console.log(err);
                     blocks = Math.floor(blocks / 2);
                 }
             }
@@ -70,10 +72,11 @@ class EventHandler {
                 index = log.index;
             }
             const data = this.parse(event);
+            console.log(data);
             const oldEvent = yield this.table.findUnique({
                 where: {
-                    chainId_blockNumber_transactionHash_transactionIndex_logIndex: {
-                        chainId: this.chainId,
+                    baseChainId_blockNumber_transactionHash_transactionIndex_logIndex: {
+                        baseChainId: this.baseChainId,
                         blockNumber,
                         transactionHash,
                         transactionIndex,
@@ -81,6 +84,7 @@ class EventHandler {
                     },
                 },
             });
+            console.log("oldEvent", oldEvent);
             if (oldEvent)
                 return;
             yield this.table.create({ data: Object.assign({}, data) });
@@ -95,7 +99,7 @@ class EventHandler {
             index = log.index;
         }
         const data = {
-            chainId: this.chainId,
+            baseChainId: this.baseChainId,
             blockNumber,
             transactionHash,
             transactionIndex,
@@ -107,19 +111,19 @@ class EventHandler {
         return data;
     }
     encodeField(type, value) {
-        if (type === "string")
-            return value;
-        if (type === "bigint")
-            return value;
         if (type === "int")
             return Number(value);
         if (type === "int[]") {
+            if (value.length === 0)
+                return "";
             return value.map((el) => Number(el).toString()).join(",");
         }
         if (type === "string[]") {
+            if (value.length === 0)
+                return "";
             return value.join(",");
         }
-        return value;
+        return value.toString();
     }
     decodeField(type, value) {
         if (type === "int[]") {

@@ -14,10 +14,8 @@ const governorContract_1 = require("./governorContract");
 const tokenContract_1 = require("./tokenContract");
 function syncEvents({ id: chainId, minBlock, address: governorAddress, token: tokenAddress, provider, }) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield Promise.all([
-            (0, governorContract_1.syncGovernorContractEvent)(chainId, minBlock, governorAddress, provider),
-            (0, tokenContract_1.syncTokenContractEvent)(chainId, minBlock, tokenAddress, provider),
-        ]);
+        yield (0, governorContract_1.syncGovernorContractEvent)(chainId, minBlock, governorAddress, provider);
+        yield (0, tokenContract_1.syncTokenContractEvent)(chainId, minBlock, tokenAddress, provider);
     });
 }
 exports.syncEvents = syncEvents;

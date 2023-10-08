@@ -38,8 +38,6 @@ export async function syncTokenContractEvent(
     "Approval"
   );
 
-  await Promise.all([
-    ApprovalEventHandler.syncEvent(),
-    TransferEventHandler.syncEvent(),
-  ]);
+  await ApprovalEventHandler.syncEvent();
+  await TransferEventHandler.syncEvent();
 }

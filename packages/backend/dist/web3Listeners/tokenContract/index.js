@@ -23,16 +23,14 @@ function syncTokenContractEvent(chainId, minBlock, address, provider) {
             ["from", "from", "string"],
             ["to", "to", "string"],
             ["value", "value", "string"],
-        ], "TransferEvent", "Transfer");
+        ], "transferEvent", "Transfer");
         const ApprovalEventHandler = new EventIndexer_1.EventHandler(provider, minBlock, chainId, contract, [
             ["owner", "owner", "string"],
             ["spender", "spender", "string"],
             ["value", "value", "string"],
-        ], "ApprovalEvent", "Approval");
-        yield Promise.all([
-            ApprovalEventHandler.syncEvent(),
-            TransferEventHandler.syncEvent(),
-        ]);
+        ], "approvalEvent", "Approval");
+        yield ApprovalEventHandler.syncEvent();
+        yield TransferEventHandler.syncEvent();
     });
 }
 exports.syncTokenContractEvent = syncTokenContractEvent;

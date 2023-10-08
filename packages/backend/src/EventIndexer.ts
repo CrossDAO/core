@@ -46,7 +46,6 @@ export class EventHandler {
 
   async syncEventTillNow() {
     const lastEvent = await this.table.findFirst({
-      where: { manualEntry: false },
       orderBy: { blockNumber: "desc" },
     });
     const lastBlock = lastEvent?.blockNumber || this.minBlock;
@@ -92,6 +91,7 @@ export class EventHandler {
         },
       },
     });
+
     if (oldEvent) return;
 
     await this.table.create({ data: { ...data } });
@@ -122,16 +122,16 @@ export class EventHandler {
   }
 
   encodeField(type: string, value: any) {
-    if (type === "string") return value;
-    if (type === "bigint") return value;
     if (type === "int") return Number(value);
     if (type === "int[]") {
+      if (value.length === 0) return "";
       return value.map((el: any) => Number(el).toString()).join(",");
     }
     if (type === "string[]") {
+      if (value.length === 0) return "";
       return value.join(",");
     }
-    return value;
+    return value.toString();
   }
 
   decodeField(type: string, value: any) {

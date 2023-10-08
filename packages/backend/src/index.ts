@@ -26,13 +26,9 @@ const supportedChains = {
 };
 
 async function main() {
-  const listeners: Promise<void>[] = [];
-
   for (const networkConfig of Object.values(supportedChains)) {
-    listeners.push(syncEvents(networkConfig));
+    await syncEvents(networkConfig);
   }
-
-  await Promise.all(listeners);
 }
 
 main();

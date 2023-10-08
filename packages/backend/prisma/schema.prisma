@@ -65,13 +65,13 @@ model ProposalCreatedEvent {
   logIndex         Int
   proposalId       String
   proposer         String
-  targets          String   @db.VarChar(3000) // encode [] to string
-  values           String   @db.VarChar(3000) // encode [] to string
-  signatures       String   @db.VarChar(3000) // encode [] to string
-  calldatas        String   @db.VarChar(3000) // encode [] to string
+  targets          String @db.VarChar(3000) // encode [] to string
+  values           String @db.VarChar(3000) // encode [] to string
+  signatures       String @db.VarChar(3000) // encode [] to string
+  calldatas        String @db.VarChar(3000) // encode [] to string
   description      String
-  startTime        DateTime
-  endTime          DateTime
+  startTime        String
+  endTime          String
 
   @@id([baseChainId, blockNumber, transactionHash, transactionIndex, logIndex])
 }
@@ -84,8 +84,8 @@ model CrossChainProposalCreatedEvent {
   logIndex         Int
   chainId          Int
   proposalId       String
-  startTime        DateTime
-  endTime          DateTime
+  startTime        String
+  endTime          String
 
   @@id([baseChainId, blockNumber, transactionHash, transactionIndex, logIndex])
 }

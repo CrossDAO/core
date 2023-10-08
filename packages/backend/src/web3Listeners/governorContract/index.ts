@@ -182,18 +182,16 @@ export async function syncGovernorContractEvent(
     "ProposalExecuted"
   );
 
-  await Promise.all([
-    SupportChainAddedEventHandler.syncEvent(),
-    SupportChainRemovedEventHandler.syncEvent(),
-    DurationUpdatedEventHandler.syncEvent(),
-    TokenStakedEventHandler.syncEvent(),
-    ProposalCreatedEventHandler.syncEvent(),
-    CrossChainProposalCreatedEventHandler.syncEvent(),
-    VotedOnBaseChainProposalEventHandler.syncEvent(),
-    VotedOnCrossChainProposalEventHandler.syncEvent(),
-    VotesSentEventHandler.syncEvent(),
-    VotesReceivedEventHandler.syncEvent(),
-    TokenUnstakedEventHandler.syncEvent(),
-    ProposalExecutedEventHandler.syncEvent(),
-  ]);
+  await SupportChainAddedEventHandler.syncEvent();
+  await SupportChainRemovedEventHandler.syncEvent();
+  await DurationUpdatedEventHandler.syncEvent();
+  await TokenStakedEventHandler.syncEvent();
+  await ProposalCreatedEventHandler.syncEvent();
+  await CrossChainProposalCreatedEventHandler.syncEvent();
+  await VotedOnBaseChainProposalEventHandler.syncEvent();
+  await VotedOnCrossChainProposalEventHandler.syncEvent();
+  await VotesSentEventHandler.syncEvent();
+  await VotesReceivedEventHandler.syncEvent();
+  await TokenUnstakedEventHandler.syncEvent();
+  await ProposalExecutedEventHandler.syncEvent();
 }

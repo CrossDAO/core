@@ -8,9 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const web3Listeners_1 = require("./web3Listeners");
+const dotenv_1 = __importDefault(require("dotenv"));
 const ethers_1 = require("ethers");
+dotenv_1.default.config();
 const supportedChains = {
     "polygon-mumbai": {
         id: 6,
@@ -29,11 +34,9 @@ const supportedChains = {
 };
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const listeners = [];
         for (const networkConfig of Object.values(supportedChains)) {
-            listeners.push((0, web3Listeners_1.syncEvents)(networkConfig));
+            yield (0, web3Listeners_1.syncEvents)(networkConfig);
         }
-        yield Promise.all(listeners);
     });
 }
 main();
