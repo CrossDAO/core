@@ -1,0 +1,1284 @@
+[
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_governanceToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "wormholeRelayer_",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "inputs": [],
+        "name": "ChainNotSupported",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "InsufficiantStakedBalance",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "InvalidFeesPaid",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "InvalidProposalId",
+        "type": "error"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "name": "NotAnEvmAddress",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "OnlyRelayerAllowed",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "OnlySupportedContracts",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "ProposalAlreadyExecuted",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "ProposalRejected",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "SupportedContractCannotBeZeroAddress",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "UnequalListLengths",
+        "type": "error"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint16",
+                "name": "chainId",
+                "type": "uint16"
+            },
+            {
+                "internalType": "uint256",
+                "name": "proposalId",
+                "type": "uint256"
+            }
+        ],
+        "name": "VotesAlreadyCountedOn",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "VotesAlreadyRequested",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "VotesNotCountedYet",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "VotingEnded",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "VotingPeriodNotEnded",
+        "type": "error"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "uint16",
+                "name": "chainId",
+                "type": "uint16"
+            },
+            {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "proposalId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "startTime",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "endTime",
+                "type": "uint256"
+            }
+        ],
+        "name": "CrossChainProposalCreated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "newDuration",
+                "type": "uint256"
+            }
+        ],
+        "name": "DurationUpdated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "previousOwner",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "OwnershipTransferred",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "proposalId",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "proposer",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address[]",
+                "name": "targets",
+                "type": "address[]"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256[]",
+                "name": "values",
+                "type": "uint256[]"
+            },
+            {
+                "indexed": false,
+                "internalType": "string[]",
+                "name": "signatures",
+                "type": "string[]"
+            },
+            {
+                "indexed": false,
+                "internalType": "bytes[]",
+                "name": "calldatas",
+                "type": "bytes[]"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "description",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "startTime",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "endTime",
+                "type": "uint256"
+            }
+        ],
+        "name": "ProposalCreated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "proposalId",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "executer",
+                "type": "address"
+            }
+        ],
+        "name": "ProposalExecuted",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "uint16",
+                "name": "chainId",
+                "type": "uint16"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "contractAddress",
+                "type": "address"
+            }
+        ],
+        "name": "SupportChainAdded",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "uint16",
+                "name": "chainId",
+                "type": "uint16"
+            }
+        ],
+        "name": "SupportChainRemoved",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "staker",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "totalStaked",
+                "type": "uint256"
+            }
+        ],
+        "name": "TokenStaked",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "staker",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "totalStaked",
+                "type": "uint256"
+            }
+        ],
+        "name": "TokenUnstaked",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "proposalId",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "voter",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "totalForVotes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "totalAgainstVotes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "totalAbstrainVotes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "forVotes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "againstVotes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "abstrainVotes",
+                "type": "uint256"
+            }
+        ],
+        "name": "VotedOnBaseChainProposal",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "uint16",
+                "name": "chainId",
+                "type": "uint16"
+            },
+            {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "proposalId",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "voter",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "totalForVotes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "totalAgainstVotes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "totalAbstrainVotes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "forVotes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "againstVotes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "abstrainVotes",
+                "type": "uint256"
+            }
+        ],
+        "name": "VotedOnCrossChainProposal",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "uint16",
+                "name": "chainId",
+                "type": "uint16"
+            },
+            {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "proposalId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "totalForVotes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "totalAgainstVotes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "totalAbstrainVotes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "forVotes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "againstVotes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "abstrainVotes",
+                "type": "uint256"
+            }
+        ],
+        "name": "VotesReceived",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "uint16",
+                "name": "chainId",
+                "type": "uint16"
+            },
+            {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "proposalId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "forVotes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "againstVotes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "abstrainVotes",
+                "type": "uint256"
+            }
+        ],
+        "name": "VotesSent",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint16",
+                "name": "chainId",
+                "type": "uint16"
+            },
+            {
+                "internalType": "address",
+                "name": "contractAddress",
+                "type": "address"
+            }
+        ],
+        "name": "addSupportedContract",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "baseProposals",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "proposer",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "descriptionHash",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bool",
+                "name": "executed",
+                "type": "bool"
+            },
+            {
+                "internalType": "bool",
+                "name": "votesRequested",
+                "type": "bool"
+            },
+            {
+                "internalType": "uint256",
+                "name": "startTime",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "endTime",
+                "type": "uint256"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "totalVotes",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "forVotes",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "againstVotes",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "abstrainVotes",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct IGovernorV2.VoteInfo",
+                "name": "baseChainVoteInfo",
+                "type": "tuple"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "totalVotes",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "forVotes",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "againstVotes",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "abstrainVotes",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct IGovernorV2.VoteInfo",
+                "name": "crossChainVoteInfo",
+                "type": "tuple"
+            },
+            {
+                "internalType": "uint256",
+                "name": "activeProposalId",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            }
+        ],
+        "name": "countVotes",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address[]",
+                "name": "targets",
+                "type": "address[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "values",
+                "type": "uint256[]"
+            },
+            {
+                "internalType": "bytes[]",
+                "name": "calldatas",
+                "type": "bytes[]"
+            },
+            {
+                "internalType": "string",
+                "name": "description",
+                "type": "string"
+            }
+        ],
+        "name": "createProposal",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint16",
+                "name": "",
+                "type": "uint16"
+            },
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "crossChainProposals",
+        "outputs": [
+            {
+                "internalType": "uint16",
+                "name": "chainId",
+                "type": "uint16"
+            },
+            {
+                "internalType": "uint256",
+                "name": "proposalId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "startTime",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "endTime",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bool",
+                "name": "isVotesTransferred",
+                "type": "bool"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "totalVotes",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "forVotes",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "againstVotes",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "abstrainVotes",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct IGovernorV2.VoteInfo",
+                "name": "votesInfo",
+                "type": "tuple"
+            },
+            {
+                "internalType": "uint256",
+                "name": "activeProposalId",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "duration",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "estimatedActiveBaseChainProposals",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint16",
+                "name": "",
+                "type": "uint16"
+            },
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "estimatedActiveCrossChainProposals",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            }
+        ],
+        "name": "executeProposal",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "governanceToken",
+        "outputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "hasVotedOnBaseProposal",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "totalVotes",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "forVotes",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "againstVotes",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "abstrainVotes",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint16",
+                "name": "",
+                "type": "uint16"
+            },
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "hasVotedOnCrossChainProposal",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "totalVotes",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "forVotes",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "againstVotes",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "abstrainVotes",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "quoteBroadcastingFees",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "cost",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes",
+                "name": "payload",
+                "type": "bytes"
+            },
+            {
+                "internalType": "bytes[]",
+                "name": "",
+                "type": "bytes[]"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "sourceAddress",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "uint16",
+                "name": "sourceChain",
+                "type": "uint16"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "name": "receiveWormholeMessages",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint16",
+                "name": "chainId",
+                "type": "uint16"
+            }
+        ],
+        "name": "removeSupportedContract",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "renounceOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_duration",
+                "type": "uint256"
+            }
+        ],
+        "name": "setDuration",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "stake",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "stakedBalance",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "supportedChains",
+        "outputs": [
+            {
+                "internalType": "uint16",
+                "name": "",
+                "type": "uint16"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint16",
+                "name": "",
+                "type": "uint16"
+            }
+        ],
+        "name": "supportedContracts",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "totalEstimatedActiveBaseChainProposal",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint16",
+                "name": "",
+                "type": "uint16"
+            }
+        ],
+        "name": "totalEstimatedActiveCrossChainProposal",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "totalProposals",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "totalSupportedChains",
+        "outputs": [
+            {
+                "internalType": "uint8",
+                "name": "",
+                "type": "uint8"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "unstake",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            },
+            {
+                "internalType": "enum IGovernorV2.VoteTypes",
+                "name": "voteType",
+                "type": "uint8"
+            }
+        ],
+        "name": "voteOnBaseProposal",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint16",
+                "name": "chainId",
+                "type": "uint16"
+            },
+            {
+                "internalType": "uint256",
+                "name": "proposalId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "enum IGovernorV2.VoteTypes",
+                "name": "voteType",
+                "type": "uint8"
+            }
+        ],
+        "name": "voteOnCrossChainProposal",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint16",
+                "name": "",
+                "type": "uint16"
+            }
+        ],
+        "name": "votesCountedOn",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "wormholeRelayer",
+        "outputs": [
+            {
+                "internalType": "contract IWormholeRelayer",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "receive"
+    }
+]

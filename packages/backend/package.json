@@ -1,0 +1,30 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"tsc --watch\" \"nodemon -q dist/index.js\"",
+    "dev:js": "nodemon -q dist/index.js",
+    "migrate": "prisma migrate",
+    "generate": "prisma generate",
+    "studio": "prisma studio",
+    "watch": "tsc --watch",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "prisma": "^4.10.1"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.10.1",
+    "concurrently": "^8.2.1",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.7.1",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}

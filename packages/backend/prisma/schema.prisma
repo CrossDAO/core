@@ -1,0 +1,212 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+model SupportChainAddedEvent {
+  baseChainId      Int
+  blockNumber      Int
+  transactionHash  String
+  transactionIndex Int
+  logIndex         Int
+  chainId          Int
+  contractAddress  String
+
+  @@id([baseChainId, blockNumber, transactionHash, transactionIndex, logIndex])
+}
+
+model SupportChainRemovedEvent {
+  baseChainId      Int
+  blockNumber      Int
+  transactionHash  String
+  transactionIndex Int
+  logIndex         Int
+  chainId          Int
+
+  @@id([baseChainId, blockNumber, transactionHash, transactionIndex, logIndex])
+}
+
+model DurationUpdatedEvent {
+  baseChainId      Int
+  blockNumber      Int
+  transactionHash  String
+  transactionIndex Int
+  logIndex         Int
+  newDuration      String
+
+  @@id([baseChainId, blockNumber, transactionHash, transactionIndex, logIndex])
+}
+
+model TokenStakedEvent {
+  baseChainId      Int
+  blockNumber      Int
+  transactionHash  String
+  transactionIndex Int
+  logIndex         Int
+  amount           String
+  totalStaked      String
+  staker           String
+
+  @@id([baseChainId, blockNumber, transactionHash, transactionIndex, logIndex])
+}
+
+model ProposalCreatedEvent {
+  baseChainId      Int
+  blockNumber      Int
+  transactionHash  String
+  transactionIndex Int
+  logIndex         Int
+  proposalId       String
+  proposer         String
+  targets          String   @db.VarChar(3000) // encode [] to string
+  values           String   @db.VarChar(3000) // encode [] to string
+  signatures       String   @db.VarChar(3000) // encode [] to string
+  calldatas        String   @db.VarChar(3000) // encode [] to string
+  description      String
+  startTime        DateTime
+  endTime          DateTime
+
+  @@id([baseChainId, blockNumber, transactionHash, transactionIndex, logIndex])
+}
+
+model CrossChainProposalCreatedEvent {
+  baseChainId      Int
+  blockNumber      Int
+  transactionHash  String
+  transactionIndex Int
+  logIndex         Int
+  chainId          Int
+  proposalId       String
+  startTime        DateTime
+  endTime          DateTime
+
+  @@id([baseChainId, blockNumber, transactionHash, transactionIndex, logIndex])
+}
+
+model VotedOnBaseChainProposalEvent {
+  baseChainId        Int
+  blockNumber        Int
+  transactionHash    String
+  transactionIndex   Int
+  logIndex           Int
+  proposalId         String
+  voter              String
+  totalForVotes      String
+  totalAgainstVotes  String
+  totalAbstrainVotes String
+  forVotes           String
+  againstVotes       String
+  abstrainVotes      String
+
+  @@id([baseChainId, blockNumber, transactionHash, transactionIndex, logIndex])
+}
+
+model VotedOnCrossChainProposalEvent {
+  baseChainId        Int
+  blockNumber        Int
+  transactionHash    String
+  transactionIndex   Int
+  logIndex           Int
+  chainId            Int
+  proposalId         String
+  voter              String
+  totalForVotes      String
+  totalAgainstVotes  String
+  totalAbstrainVotes String
+  forVotes           String
+  againstVotes       String
+  abstrainVotes      String
+
+  @@id([baseChainId, blockNumber, transactionHash, transactionIndex, logIndex])
+}
+
+model VotesSentEvent {
+  baseChainId      Int
+  blockNumber      Int
+  transactionHash  String
+  transactionIndex Int
+  logIndex         Int
+  chainId          Int
+  proposalId       String
+  forVotes         String
+  againstVotes     String
+  abstrainVotes    String
+
+  @@id([baseChainId, blockNumber, transactionHash, transactionIndex, logIndex])
+}
+
+model VotesReceivedEvent {
+  baseChainId        Int
+  blockNumber        Int
+  transactionHash    String
+  transactionIndex   Int
+  logIndex           Int
+  chainId            Int
+  proposalId         String
+  totalForVotes      String
+  totalAgainstVotes  String
+  totalAbstrainVotes String
+  forVotes           String
+  againstVotes       String
+  abstrainVotes      String
+
+  @@id([baseChainId, blockNumber, transactionHash, transactionIndex, logIndex])
+}
+
+model TokenUnstakedEvent {
+  baseChainId      Int
+  blockNumber      Int
+  transactionHash  String
+  transactionIndex Int
+  logIndex         Int
+  staker           String
+  amount           String
+  totalStaked      String
+
+  @@id([baseChainId, blockNumber, transactionHash, transactionIndex, logIndex])
+}
+
+model ProposalExecutedEvent {
+  baseChainId      Int
+  blockNumber      Int
+  transactionHash  String
+  transactionIndex Int
+  logIndex         Int
+  proposalId       String
+  executer         String
+
+  @@id([baseChainId, blockNumber, transactionHash, transactionIndex, logIndex])
+}
+
+model TransferEvent {
+  baseChainId      Int
+  blockNumber      Int
+  transactionHash  String
+  transactionIndex Int
+  logIndex         Int
+  from             String
+  to               String
+  value            String
+
+  @@id([baseChainId, blockNumber, transactionHash, transactionIndex, logIndex])
+}
+
+model ApprovalEvent {
+  baseChainId      Int
+  blockNumber      Int
+  transactionHash  String
+  transactionIndex Int
+  logIndex         Int
+  owner            String
+  spender          String
+  value            String
+
+  @@id([baseChainId, blockNumber, transactionHash, transactionIndex, logIndex])
+}
