@@ -1,11 +1,10 @@
 import { useCallback, useState } from "react";
 import Spinner from "./Spinner";
-import { waitForTransaction } from "@wagmi/core";
 import { ethers } from "ethers";
 import toast from "react-hot-toast";
 import { Abi } from "viem";
 import { useAccount, useContractRead, useNetwork } from "wagmi";
-import { prepareWriteContract, writeContract } from "wagmi/actions";
+import { prepareWriteContract, waitForTransaction, writeContract } from "wagmi/actions";
 import governanceAbi from "~~/abi/governanceAbi.json";
 import tokenAbi from "~~/abi/tokenAbi.json";
 import { governanceContract, tokenContract } from "~~/constants";
@@ -31,7 +30,7 @@ const Balances = () => {
 
   const amountToStake = ethers.parseEther(amount || "0");
 
-  const handleStakeTransaction = useCallback(async () => {
+  const handleAllowanceTransaction = useCallback(async () => {
     if (!chain?.id) return;
 
     setIsLoading(true);
@@ -46,6 +45,21 @@ const Balances = () => {
       const approveRequest = await writeContract(approvePrepareRequest);
       await waitForTransaction({ hash: approveRequest.hash });
 
+      // toast.success("Tokens approved");
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong", { id: "stake-error" });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [amountToStake, chain]);
+
+  const handleStakeTransaction = useCallback(async () => {
+    if (!chain?.id) return;
+
+    setIsLoading(true);
+
+    try {
       const { request: stakePrepareRequest } = await prepareWriteContract({
         address: governanceContract[chain.id],
         abi: governanceAbi as Abi,
@@ -147,14 +161,24 @@ const Balances = () => {
                   <Spinner />
                 </div>
               ) : (
-                <button
-                  className={
-                    "bg-purple-700 rounded-full transition-colors text-white px-4 py-2 text-center flex gap-2 justify-center w-full"
-                  }
-                  onClick={() => handleStakeTransaction()}
-                >
-                  Stake
-                </button>
+                <div className="flex gap-4 flex-col w-full">
+                  <button
+                    className={
+                      "bg-purple-700 rounded-full transition-colors text-white px-4 py-2 text-center flex gap-2 justify-center w-full"
+                    }
+                    onClick={() => handleAllowanceTransaction()}
+                  >
+                    Approve tokens
+                  </button>
+                  <button
+                    className={
+                      "bg-purple-700 rounded-full transition-colors text-white px-4 py-2 text-center flex gap-2 justify-center w-full"
+                    }
+                    onClick={() => handleStakeTransaction()}
+                  >
+                    Stake
+                  </button>
+                </div>
               )}
             </div>
           </div>
