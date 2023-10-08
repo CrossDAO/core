@@ -1,10 +1,11 @@
 import { useCallback, useState } from "react";
 import Spinner from "./Spinner";
+import { waitForTransaction } from "@wagmi/core";
 import { ethers } from "ethers";
 import toast from "react-hot-toast";
 import { Abi } from "viem";
 import { useAccount, useContractRead, useNetwork } from "wagmi";
-import { prepareWriteContract, waitForTransaction, writeContract } from "wagmi/actions";
+import { prepareWriteContract, writeContract } from "wagmi/actions";
 import governanceAbi from "~~/abi/governanceAbi.json";
 import tokenAbi from "~~/abi/tokenAbi.json";
 import { governanceContract, tokenContract } from "~~/constants";
@@ -28,44 +29,43 @@ const Balances = () => {
     args: [address],
   });
 
+  const amountToStake = ethers.parseEther(amount || "0");
+
   const handleStakeTransaction = useCallback(async () => {
     if (!chain?.id) return;
 
     setIsLoading(true);
 
     try {
-      const { request: approveRequest } = await prepareWriteContract({
-        address: tokenContract[chain.id],
+      const { request: approvePrepareRequest } = await prepareWriteContract({
+        address: tokenContract[chain?.id || 0],
         abi: tokenAbi,
         functionName: "approve",
-        args: [governanceContract[chain.id], ethers.parseEther(amount)],
+        args: [governanceContract[chain?.id || 0], amountToStake],
       });
+      const approveRequest = await writeContract(approvePrepareRequest);
+      await waitForTransaction({ hash: approveRequest.hash });
 
-      const { hash: approveHash } = await writeContract(approveRequest);
-
-      await waitForTransaction({ hash: approveHash });
-
-      const { request } = await prepareWriteContract({
+      const { request: stakePrepareRequest } = await prepareWriteContract({
         address: governanceContract[chain.id],
         abi: governanceAbi as Abi,
         functionName: "stake",
-        args: [ethers.parseEther(amount)],
+        args: [amountToStake],
       });
-
-      const { hash } = await writeContract(request);
-
-      await waitForTransaction({ hash });
+      const stakeRequest = await writeContract(stakePrepareRequest);
+      await waitForTransaction({ hash: stakeRequest.hash });
 
       toast.success("Staked tokens successfully");
 
-      refetch();
+      setIsModalOpen(false);
+      await refetch();
     } catch (err) {
       console.error(err);
       toast.error("Something went wrong", { id: "stake-error" });
     } finally {
       setIsLoading(false);
     }
-  }, [amount, chain, refetch]);
+  }, [amountToStake, chain, refetch]);
 
   return (
     <>
@@ -97,7 +97,7 @@ const Balances = () => {
 
                   <div className="flex justify-between">
                     <div className="text-primary-content">Staked</div>
-                    <div>{result?.toString()}</div>
+                    <div>{result ? ethers.formatEther(result.toString()) : "0"}</div>
                   </div>
                 </div>
               </div>

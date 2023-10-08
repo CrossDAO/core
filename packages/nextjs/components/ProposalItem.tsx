@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { chainLogos } from "../constants";
+import { ethers } from "ethers";
 
 export interface IProposal {
   id: string;
@@ -38,8 +39,14 @@ const Proposal = ({ proposal }: ProposalProps) => {
               <p className="text-lg my-0 text-white break-all">{proposal.description}</p>
             </div>
             <div className="text-right">
-              <p>Base Chain votes: {proposal.baseChainVotes?.[0] || 0}</p>
-              <p>Other Chains votes: {proposal.otherChainVotes?.[0] || 0}</p>
+              <p>
+                Base Chain votes:{" "}
+                {proposal.baseChainVotes?.[0] ? ethers.formatEther(proposal.baseChainVotes?.[0].toString()) : 0}
+              </p>
+              <p>
+                Other Chains votes:{" "}
+                {proposal.otherChainVotes?.[0] ? ethers.formatEther(proposal.otherChainVotes?.[0]) : 0}
+              </p>
             </div>
           </div>
         </div>
