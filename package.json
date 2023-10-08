@@ -30,8 +30,10 @@
     "vercel:yolo": "yarn workspace @se-2/nextjs vercel:yolo"
   },
   "packageManager": "yarn@3.2.3",
+  "dependencies": {
+    "husky": "^8.0.1"
+  },
   "devDependencies": {
-    "husky": "^8.0.1",
     "lint-staged": "^13.0.3"
   },
   "resolutions": {

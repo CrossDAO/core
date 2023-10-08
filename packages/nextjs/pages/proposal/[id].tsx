@@ -1,17 +1,23 @@
+import Image from "next/image";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { useGetProposals } from "~~/api/getProposals";
+import { useGetProposals } from "~~/apiRequests/getProposals";
 import ProposalDetails from "~~/components/ProposalDetails";
 import { IProposal } from "~~/components/ProposalItem";
+import { chainLogos } from "~~/constants";
 
 const Details: NextPage = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { id = "" } = router.query;
+
+  const [chainId, proposalId] = (id as string)?.split("-") || [];
 
   const { data = [], isLoading } = useGetProposals();
 
-  const proposal = data.find((p: IProposal) => p.id === parseInt(id as string));
+  const proposal = data.find((p: IProposal) => p.id === proposalId && p.chainId === parseInt(chainId)) || {};
+
+  const chainImage = chainLogos[proposal.chainId as keyof typeof chainLogos];
 
   return (
     <>
@@ -21,7 +27,12 @@ const Details: NextPage = () => {
         </button>
 
         <h1 className="my-6">
-          <span className="text-3xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-400 ">
+          {chainImage && (
+            <div>
+              <Image src={chainImage} width={30} height={30} alt="" className="mb-3" />
+            </div>
+          )}
+          <span className="text-3xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-400 break-all">
             {proposal?.title}
           </span>
         </h1>

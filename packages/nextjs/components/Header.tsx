@@ -1,26 +1,25 @@
 import React, { useCallback, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { Bars3Icon, BugAntIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon } from "@heroicons/react/24/outline";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 
-const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
-  const router = useRouter();
-  const isActive = router.pathname === href;
+// const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
+//   const router = useRouter();
+//   const isActive = router.pathname === href;
 
-  return (
-    <Link
-      href={href}
-      passHref
-      className={`${
-        isActive ? "bg-base-200 shadow-md" : ""
-      } focus:!bg-base-200 hover:bg-base-200 hover:shadow-md py-1.5 px-3 text-sm !text-white rounded-full gap-2 grid grid-flow-col`}
-    >
-      {children}
-    </Link>
-  );
-};
+//   return (
+//     <Link
+//       href={href}
+//       passHref
+//       className={`${
+//         isActive ? "bg-base-200 shadow-md" : ""
+//       } focus:!bg-base-200 hover:bg-base-200 hover:shadow-md py-1.5 px-3 text-sm !text-white rounded-full gap-2 grid grid-flow-col`}
+//     >
+//       {children}
+//     </Link>
+//   );
+// };
 
 /**
  * Site header
@@ -35,7 +34,7 @@ export const Header = () => {
 
   const navLinks = (
     <>
-      <li>
+      {/* <li>
         <NavLink href="/">Home</NavLink>
       </li>
       <li>
@@ -43,7 +42,7 @@ export const Header = () => {
           <BugAntIcon className="h-4 w-4" />
           Debug Contracts
         </NavLink>
-      </li>
+      </li> */}
     </>
   );
 
@@ -74,7 +73,7 @@ export const Header = () => {
         </div>
         <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
           <div className="flex flex-col">
-            <span className="font-bold leading-tight">CrossDAO</span>
+            <span className="font-bold leading-tight">zkCrossDAO</span>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">{navLinks}</ul>

@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import Proposal from "./ProposalItem";
 import Spinner from "./Spinner";
-import { useGetProposals } from "~~/api/getProposals";
+import { useGetProposals } from "~~/apiRequests/getProposals";
 
 const ProposalsList = () => {
   const router = useRouter();
